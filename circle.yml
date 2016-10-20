@@ -9,13 +9,13 @@ dependencies:
   override:
     - docker build -t ${IMAGE} docker
     - docker run -d --name nginx-mini -p 9180:9180 ${IMAGE}
-    
+
 test:
   pre: 
     - sleep 10
   override:
     - "curl http://localhost:9180/"
-    - "[[ $(curl http://localhost:9180/) = 'Hello World!' ]]"
+    - "[[ $(curl -sL -w '%{http_code}\\n' http://localhost:9180/ -o /dev/null) = '200' ]]"
   post:
     - docker logs nginx-mini > $CIRCLE_TEST_REPORTS/Dockerlogs.log
     - docker images > $CIRCLE_TEST_REPORTS/Dockerimages.log
