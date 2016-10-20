@@ -1,0 +1,21 @@
+machine:
+  services:
+    - docker
+  environment:
+    VERSION: ${CIRCLE_TAG:1}
+    DOCKER_NAME: nginx-mini
+
+dependencies:
+  override:
+    - docker build -t polyglotted/${DOCKER_NAME}:${VERSION} .
+
+test:
+  override:
+    - docker images > $CIRCLE_TEST_REPORTS/Dockerimages.log
+
+deployment:
+  hub:
+    tag: /v[0-9]+(\.[0-9]+)*/
+    commands:
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - docker push polyglotted/${DOCKER_NAME}:${VERSION}
