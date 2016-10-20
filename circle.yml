@@ -3,19 +3,27 @@ machine:
     - docker
   environment:
     VERSION: ${CIRCLE_TAG:1}
-    DOCKER_NAME: nginx-mini
+    IMAGE: polyglotted/nginx-mini:${VERSION}
 
 dependencies:
   override:
-    - docker build -t polyglotted/${DOCKER_NAME}:${VERSION} docker
-
+    - docker build -t ${IMAGE} docker
+    - docker run -d --name nginx-mini -p 9180:9180 ${IMAGE}
+    
 test:
+  pre: 
+    - sleep 10
   override:
+    - "curl http://localhost:9180/"
+    - "[[ $(curl http://localhost:9180/) = 'Hello World!' ]]"
+  post:
+    - docker logs nginx-mini > $CIRCLE_TEST_REPORTS/Dockerlogs.log
     - docker images > $CIRCLE_TEST_REPORTS/Dockerimages.log
+    - docker stop nginx-mini
 
 deployment:
   hub:
     tag: /v[0-9]+(\.[0-9]+)*/
     commands:
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-      - docker push polyglotted/${DOCKER_NAME}:${VERSION}
+      - docker push ${IMAGE}
