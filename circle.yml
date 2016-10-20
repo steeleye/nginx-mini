@@ -7,7 +7,7 @@ machine:
 
 dependencies:
   override:
-    - docker build -t polyglotted/${DOCKER_NAME}:${VERSION} .
+    - docker build -t polyglotted/${DOCKER_NAME}:${VERSION} docker
 
 test:
   override:
