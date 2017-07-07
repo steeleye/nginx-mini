@@ -3,7 +3,7 @@ machine:
     - docker
   environment:
     VERSION: ${CIRCLE_TAG:1}
-    IMAGE: polyglotted/nginx-mini:${VERSION}
+    IMAGE: steeleye/nginx-mini:${VERSION}
 
 dependencies:
   override:
@@ -11,7 +11,7 @@ dependencies:
     - docker run -d --name nginx-mini -p 9180:9180 ${IMAGE}
 
 test:
-  pre: 
+  pre:
     - sleep 10
   override:
     - "curl http://localhost:9180/"
