@@ -88,4 +88,8 @@ COPY nginx.conf /etc/nginx/nginx.conf
 
 EXPOSE $NGINX_PORT
 
+RUN addgroup -g 9000 app && adduser -u 9000 -S -G app app
+RUN chown -R app:app /var/lib/nginx && chown -R app:app /var/log/nginx
+USER app
+
 CMD ["nginx", "-g", "daemon off;"]
